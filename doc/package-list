@@ -1,8 +1,1 @@
 com.projektandroid
-org.siprop.bullet
-org.siprop.bullet.constraint
-org.siprop.bullet.dynamicsWorld
-org.siprop.bullet.interfaces
-org.siprop.bullet.shape
-org.siprop.bullet.solver
-org.siprop.bullet.util

@@ -2,7 +2,9 @@ package com.projektandroid;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.siprop.bullet.Bullet;
 import org.siprop.bullet.Geometry;
@@ -19,17 +21,19 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.loaders.obj.ObjLoader;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
 
+/**
+ * Actual game logic + physic implementation class
+ * 
+ * @author Robert Pietrzko
+ *
+ */
 public class Gra implements ApplicationListener{
 	
 	private Mesh sphere,plane,cube;
@@ -39,15 +43,23 @@ public class Gra implements ApplicationListener{
 	private static Vector3 position;
 	private Bullet physics = new Bullet();
 	private BoxShape cubeShape;
-	private StaticPlaneShape groundShape;
+	private StaticPlaneShape groundShape,levelShape;
 	private SphereShape sphereShape;
-	private Geometry cubeGeom,sphereGeom,groundGeom;
-	private static MotionState cubeState,groundState,sphereState;
+	private Geometry cubeGeom,sphereGeom,groundGeom,levelGeom;
+	private static MotionState cubeState,groundState,sphereState,levelState;
 	org.siprop.bullet.util.Vector3 origin =  new org.siprop.bullet.util.Vector3(0.0f, 0.0f, 0.0f);
-	org.siprop.bullet.util.Vector3 idSize =  new org.siprop.bullet.util.Vector3(1.0f, 1.0f, 1.0f);
+	org.siprop.bullet.util.Vector3 idSize =  new org.siprop.bullet.util.Vector3(2.0f, 2.0f, 2.0f);
 	private Map<Integer, RigidBody> rigidBody;
 	private static float[] glMat = new float[16];
 	
+	
+	/**
+	 * This method is called right after initialize() method in Android Project.
+	 * Loads meshes(.obj) and textures(.png) from /data folder.
+	 * Creates perspective camera.
+	 * Starts physics.
+	 * @throws IOException This Exception is thrown when specific file is not found.
+	 */
 	public void create() {
 		//Loading meshes + textures
 		try{
@@ -89,6 +101,11 @@ public class Gra implements ApplicationListener{
 	public void resize(int width, int height) {
 	}
 
+	/**
+	 * This method is responsible for OpenGL rendering mechanism.
+	 * Adds lighting to the world.
+	 * Checks rigidBody map for proper collisionshapes (like SphereShape or BoxShape).
+	 */
 	public void render() {
 		float[] light_ambient = new float[] { 0.2f, 0.2f, 0.2f, 1.0f };
 		float[] light_diffuse = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -127,41 +144,52 @@ public class Gra implements ApplicationListener{
 		rigidBody = physics.doSimulation(deltaTime,1);
 		//endTime = (System.nanoTime() - startTime) / 1000000000.0f;
 		
+		//iterator = rigidBody.entrySet().iterator();
+		
+		for(RigidBody key : rigidBody.values())
+	       {
+			String k = Integer.toString(key.id);
+			Gdx.app.log("rigidbody",key.geometry.shape.toString());
+			Gdx.app.log("key",k);
+	       }
+		
 		for(RigidBody body: rigidBody.values()) {
 			
-			/*if(body.geometry.shape.getType() == ShapeType.BOX_SHAPE_PROXYTYPE) {
+			body.motionState.resultSimulation.getOpenGLMatrix(glMat);
+			//gl.glMultMatrixf(glMat, 0);
+			
+			if(body.geometry.shape.getType() == ShapeType.BOX_SHAPE_PROXYTYPE) {
 				gl.glPushMatrix();
 				
-				body.motionState.resultSimulation.getOpenGLMatrix(glMat);
-				//gl.glMultMatrixf(glMat, 0);
+				//body.motionState.resultSimulation.getOpenGLMatrix(glMat);
+				gl.glMultMatrixf(glMat, 0);
 
 				cubeShape = (BoxShape) body.geometry.shape;
 				
 				fire.bind();
-				gl.glScalef(10,10,10);
+				gl.glScalef(5,5,5);
 				cube.render(GL10.GL_TRIANGLES);
 				gl.glPopMatrix();
-			}*/
+			}
 			
 			if(body.geometry.shape.getType() == ShapeType.STATIC_PLANE_PROXYTYPE) {
-				gl.glPushMatrix();
+					gl.glPushMatrix();
 				
-				body.motionState.resultSimulation.getOpenGLMatrix(glMat);
-				gl.glMultMatrixf(glMat, 0);
+					//body.motionState.resultSimulation.getOpenGLMatrix(glMat);
+					gl.glMultMatrixf(glMat, 0);
 
-				groundShape = (StaticPlaneShape) body.geometry.shape;
+					groundShape = (StaticPlaneShape) body.geometry.shape;
 				
-				wood.bind();
-				gl.glRotatef(270,1,0,0);
-				gl.glScalef(2,2,2);
-				plane.render(GL10.GL_TRIANGLES);
-				gl.glPopMatrix();
+					wood.bind();
+					gl.glRotatef(270,1,0,0);
+					plane.render(GL10.GL_TRIANGLES);
+					gl.glPopMatrix();
 			}
 			
 			if(body.geometry.shape.getType() == ShapeType.SPHERE_SHAPE_PROXYTYPE) {
 				gl.glPushMatrix();
 				
-				body.motionState.resultSimulation.getOpenGLMatrix(glMat);
+				//body.motionState.resultSimulation.getOpenGLMatrix(glMat);
 				gl.glMultMatrixf(glMat, 0);
 
 				sphereShape = (SphereShape) body.geometry.shape;
@@ -185,6 +213,9 @@ public class Gra implements ApplicationListener{
 	public void resume() {
 	}
 
+	/**
+	 * Destroys every model and texture from world.
+	 */
 	public void dispose() {
 		sphere.dispose();
 		steel.dispose();
@@ -194,17 +225,23 @@ public class Gra implements ApplicationListener{
 		fire.dispose();
 	}
 	
+	/**
+	 * Method responsible for sphere mesh (player) movement.
+	 * @param gl loads current OpenGl version that is used.
+	 */
 	public void sphereMovement(GL10 gl){
 		spherex = Gdx.input.getAccelerometerX();
 		spherey = Gdx.input.getAccelerometerY();
 		spherez = Gdx.input.getAccelerometerZ();
 		position.add(-spherex/10,spherey/10,0);
 		gl.glTranslatef(position.x,0.0f,position.y);
-		//sphereState.worldTransform = new Transform(new Point3(position.x,0.0f,position.y));
 		gl.glRotatef(45 * (position.y / 5), 1, 0, 0);
 		gl.glRotatef(-45 * (position.x / 2), 0, 0, 1);
 	}
 	
+	/**
+	 * Method sets up camera and binds it to player.
+	 */
 	public void cameraSetup(){
 		camera.near = 1;
 		camera.far = 100;
@@ -214,8 +251,13 @@ public class Gra implements ApplicationListener{
 		camera.apply(Gdx.gl10);
 	}	
 	
+	/**
+	 * Method initializes physics, creates collision body from: -mesh shape
+	 * 															-mesh geometry
+	 * 															-mesh motion state
+	 */
 	public void initPhysics(){
-		float cubemass = 1.0f, spheremass = 1.0f;
+		float cubemass = 1.0f, spheremass = 5.0f;
 		
 		physics.createPhysicsWorld(new org.siprop.bullet.util.Vector3(-60.0f,-60.0f,-60.0f),
 									new org.siprop.bullet.util.Vector3(60.0f,60.0f,60.0f),
@@ -225,23 +267,28 @@ public class Gra implements ApplicationListener{
 		groundGeom = physics.createGeometry(groundShape, 0.0f, new org.siprop.bullet.util.Vector3(0.0f, 0.0f, 0.0f));
 		groundState = new MotionState();
 		groundState.worldTransform = new Transform(new Point3(0f,-10.0f, 0.0f));
-		
-		/*cubeShape = new BoxShape(idSize);
+				
+		for(int i = 0; i < 3; i++){
+		cubeShape = new BoxShape(idSize);
 		cubeGeom = physics.createGeometry(cubeShape, cubemass, origin);
 		cubeState = new MotionState();
 		org.siprop.bullet.util.Vector3 cubelocalInertia = new org.siprop.bullet.util.Vector3(0, 0, 0);
 		cubeShape.calculateLocalInertia(cubemass, cubelocalInertia);
-		cubeGeom.localInertia = cubelocalInertia;*/
+		cubeGeom.localInertia = cubelocalInertia;
+		cubeState.worldTransform = new Transform(new Point3(4.0f, 4.0f + 4*i,1.0f + i));
+		physics.createAndAddRigidBody(cubeGeom, cubeState);
+		}
 		
-		
-		sphereShape = new SphereShape(1.0f);
+		for(int i = 0; i < 3; i++){
+		sphereShape = new SphereShape(2.0f);
 		sphereGeom = physics.createGeometry(sphereShape, spheremass, origin);
 		sphereState = new MotionState();
-		org.siprop.bullet.util.Vector3 spherelocalInertia = new org.siprop.bullet.util.Vector3(0, 0, 0);
+		org.siprop.bullet.util.Vector3 spherelocalInertia = new org.siprop.bullet.util.Vector3(0f, 0f, 0f);
 		sphereGeom.localInertia = spherelocalInertia;
-
-		//physics.createAndAddRigidBody(cubeGeom, cubeState);
-		physics.createAndAddRigidBody(groundGeom, groundState);
+		sphereState.worldTransform = new Transform(new Point3(0.0f, 3.0f + 2*i,0.0f));
 		physics.createAndAddRigidBody(sphereGeom, sphereState);
+		}
+
+		physics.createAndAddRigidBody(groundGeom, groundState);
 	}
 }
