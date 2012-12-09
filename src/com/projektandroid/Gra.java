@@ -2,9 +2,7 @@ package com.projektandroid;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.siprop.bullet.Bullet;
 import org.siprop.bullet.Geometry;
@@ -43,10 +41,10 @@ public class Gra implements ApplicationListener{
 	private static Vector3 position;
 	private Bullet physics = new Bullet();
 	private BoxShape cubeShape;
-	private StaticPlaneShape groundShape,levelShape;
+	private StaticPlaneShape groundShape;
 	private SphereShape sphereShape;
-	private Geometry cubeGeom,sphereGeom,groundGeom,levelGeom;
-	private static MotionState cubeState,groundState,sphereState,levelState;
+	private Geometry cubeGeom,sphereGeom,groundGeom;
+	private static MotionState cubeState,groundState,sphereState;
 	org.siprop.bullet.util.Vector3 origin =  new org.siprop.bullet.util.Vector3(0.0f, 0.0f, 0.0f);
 	org.siprop.bullet.util.Vector3 idSize =  new org.siprop.bullet.util.Vector3(2.0f, 2.0f, 2.0f);
 	private Map<Integer, RigidBody> rigidBody;
