@@ -2,6 +2,7 @@ package com.projektandroid;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.FloatBuffer;
 import java.util.Map;
 
 import org.siprop.bullet.Bullet;
@@ -48,7 +49,7 @@ public class Gra implements ApplicationListener{
 	org.siprop.bullet.util.Vector3 origin =  new org.siprop.bullet.util.Vector3(0.0f, 0.0f, 0.0f);
 	org.siprop.bullet.util.Vector3 idSize =  new org.siprop.bullet.util.Vector3(2.0f, 2.0f, 2.0f);
 	private Map<Integer, RigidBody> rigidBody;
-	private static float[] glMat = new float[16];
+	private static float[] glMat = new float[16], matrix = new float[16];
 	
 	
 	/**
@@ -138,28 +139,16 @@ public class Gra implements ApplicationListener{
 		Gdx.gl.glEnable(GL10.GL_CULL_FACE);
 		Gdx.gl.glEnable(GL10.GL_TEXTURE_2D);
 		
-		//startTime = System.nanoTime();
+		startTime = System.nanoTime();
 		rigidBody = physics.doSimulation(deltaTime,1);
-		//endTime = (System.nanoTime() - startTime) / 1000000000.0f;
-		
-		//iterator = rigidBody.entrySet().iterator();
-		
-		for(RigidBody key : rigidBody.values())
-	       {
-			String k = Integer.toString(key.id);
-			Gdx.app.log("rigidbody",key.geometry.shape.toString());
-			Gdx.app.log("key",k);
-	       }
+		endTime = (System.nanoTime() - startTime) / 1000000000.0f;
 		
 		for(RigidBody body: rigidBody.values()) {
-			
-			body.motionState.resultSimulation.getOpenGLMatrix(glMat);
-			//gl.glMultMatrixf(glMat, 0);
 			
 			if(body.geometry.shape.getType() == ShapeType.BOX_SHAPE_PROXYTYPE) {
 				gl.glPushMatrix();
 				
-				//body.motionState.resultSimulation.getOpenGLMatrix(glMat);
+				body.motionState.resultSimulation.getOpenGLMatrix(glMat);
 				gl.glMultMatrixf(glMat, 0);
 
 				cubeShape = (BoxShape) body.geometry.shape;
@@ -173,8 +162,8 @@ public class Gra implements ApplicationListener{
 			if(body.geometry.shape.getType() == ShapeType.STATIC_PLANE_PROXYTYPE) {
 					gl.glPushMatrix();
 				
-					//body.motionState.resultSimulation.getOpenGLMatrix(glMat);
-					gl.glMultMatrixf(glMat, 0);
+					body.motionState.resultSimulation.getOpenGLMatrix(glMat);
+					gl.glMultMatrixf(glMat,0);
 
 					groundShape = (StaticPlaneShape) body.geometry.shape;
 				
@@ -185,21 +174,36 @@ public class Gra implements ApplicationListener{
 			}
 			
 			if(body.geometry.shape.getType() == ShapeType.SPHERE_SHAPE_PROXYTYPE) {
+				//float[] matrix = new float[16];
+															
 				gl.glPushMatrix();
+												
+				body.motionState.resultSimulation.getOpenGLMatrix(matrix);
 				
-				//body.motionState.resultSimulation.getOpenGLMatrix(glMat);
-				gl.glMultMatrixf(glMat, 0);
-
-				sphereShape = (SphereShape) body.geometry.shape;
 				sphereMovement(gl);
+				
+				matrix[12] = position.x;
+				matrix[14] = position.y;
+				
+				gl.glMultMatrixf(matrix,0);
+								
+				for(int i=0; i <matrix.length;i++){
+				String x1 = Float.toString(body.motionState.resultSimulation.originPoint.x);
+				String y1 = Float.toString(body.motionState.resultSimulation.originPoint.y);
+				String z1 = Float.toString(body.motionState.resultSimulation.originPoint.z);
+				Gdx.app.log("X",x1);
+				Gdx.app.log("Y",y1);
+				Gdx.app.log("Z",z1);
+				Gdx.app.log("lol","---------");
+				}
 				
 				steel.bind();
 				sphere.render(GL10.GL_TRIANGLES);
 				gl.glPopMatrix();
+				cameraSetup(body);
 			}
 		}
 		
-		cameraSetup();
 		gl.glDisable(GL10.GL_CULL_FACE);
 		gl.glDisable(GL10.GL_DEPTH_TEST);
 		
@@ -232,18 +236,15 @@ public class Gra implements ApplicationListener{
 		spherey = Gdx.input.getAccelerometerY();
 		spherez = Gdx.input.getAccelerometerZ();
 		position.add(-spherex/10,spherey/10,0);
-		gl.glTranslatef(position.x,0.0f,position.y);
-		gl.glRotatef(45 * (position.y / 5), 1, 0, 0);
-		gl.glRotatef(-45 * (position.x / 2), 0, 0, 1);
 	}
 	
 	/**
 	 * Method sets up camera and binds it to player.
 	 */
-	public void cameraSetup(){
+	public void cameraSetup(RigidBody body){
 		camera.near = 1;
 		camera.far = 100;
-		camera.position.set(position.x,10,position.y+5);
+		camera.position.set(body.motionState.resultSimulation.originPoint.x,body.motionState.resultSimulation.originPoint.y+10.0f,body.motionState.resultSimulation.originPoint.z + 5.0f);
 		camera.direction.set(0,-5,-3);
 		camera.update();
 		camera.apply(Gdx.gl10);
@@ -270,23 +271,21 @@ public class Gra implements ApplicationListener{
 		cubeShape = new BoxShape(idSize);
 		cubeGeom = physics.createGeometry(cubeShape, cubemass, origin);
 		cubeState = new MotionState();
-		org.siprop.bullet.util.Vector3 cubelocalInertia = new org.siprop.bullet.util.Vector3(0, 0, 0);
+		org.siprop.bullet.util.Vector3 cubelocalInertia = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
 		cubeShape.calculateLocalInertia(cubemass, cubelocalInertia);
 		cubeGeom.localInertia = cubelocalInertia;
-		cubeState.worldTransform = new Transform(new Point3(4.0f, 4.0f + 4*i,1.0f + i));
+		cubeState.worldTransform = new Transform(new Point3(0.0f,10.0f+4*i,0.0f));
 		physics.createAndAddRigidBody(cubeGeom, cubeState);
 		}
 		
-		for(int i = 0; i < 3; i++){
 		sphereShape = new SphereShape(2.0f);
 		sphereGeom = physics.createGeometry(sphereShape, spheremass, origin);
 		sphereState = new MotionState();
-		org.siprop.bullet.util.Vector3 spherelocalInertia = new org.siprop.bullet.util.Vector3(0f, 0f, 0f);
+		org.siprop.bullet.util.Vector3 spherelocalInertia = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
 		sphereGeom.localInertia = spherelocalInertia;
-		sphereState.worldTransform = new Transform(new Point3(0.0f, 3.0f + 2*i,0.0f));
+		sphereState.worldTransform = new Transform(new Point3(0.0f, 50.0f,0.0f));
+		
 		physics.createAndAddRigidBody(sphereGeom, sphereState);
-		}
-
 		physics.createAndAddRigidBody(groundGeom, groundState);
 	}
 }
