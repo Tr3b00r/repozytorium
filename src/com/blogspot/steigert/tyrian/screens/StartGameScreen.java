@@ -1,3 +1,4 @@
+
 package com.blogspot.steigert.tyrian.screens;
 
 import java.io.IOException;
@@ -143,7 +144,7 @@ implements Screen
 
       //  table.add( episode5Button ).padRight(10).padLeft(10);
 
-        episode6Button = new TextButton( "Episode 6", getSkin() );
+        episode6Button = new TextButton( "Episode 5", getSkin() );
         episode1Button.addListener( new DefaultActorListener() {
             public void touchUp(
                 ActorEvent event,
@@ -161,7 +162,6 @@ implements Screen
 				}
             }
         } );
-        
         episode2Button.addListener( new DefaultActorListener() {
             public void touchUp(
                 ActorEvent event,
@@ -172,13 +172,13 @@ implements Screen
             {
                 game.getSoundManager().play( TyrianSound.CLICK );
                 try {
-					game.setScreen( new LevelScreen1( game,Float.valueOf(shipModelSelectBox.getSelectionIndex()),-16.0f, -8.0f,-13.0f ) );
+					game.setScreen( new LevelScreen1( game,Float.valueOf(shipModelSelectBox.getSelectionIndex()),-16.0f,-8.0f,-13.0f ) );
 				} catch (IOException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
             }
         } );
-        
         table.add( episode4Button ).padRight(150);
         table.add( "        " );
         table.add( "        " );

@@ -63,16 +63,16 @@ public static final int MENU_VIEWPORT_WIDTH = 300, MENU_VIEWPORT_HEIGHT = 300;
 		String str = "Tekst do zapisania w pliku i dwie liczby: 123 i 321";
 
 		try {
-		  fos = new FileOutputStream("ala.txt");
+		  fos = new FileOutputStream("ala.txt"); //Otwieranie pliku 
 		   for(int i = 0; i < str.length(); i++){
-		     fos.write((int)str.charAt(i));
+		     fos.write((int)str.charAt(i)); //Zapis bajt po bajcie kazdego znaku...
 		   }
 		} catch(IOException ex){
-		   System.out.println("File Exception: "+ex);
+		   System.out.println("Blad operacji na pliku: "+ex);
 		}
 
 		 try {
-		  fos.close();
+		  fos.close(); //Zamykanie pliku 
 		 } catch (IOException e) {
 		   e.printStackTrace();
 		} 
@@ -95,6 +95,7 @@ public static final int MENU_VIEWPORT_WIDTH = 300, MENU_VIEWPORT_HEIGHT = 300;
     {
     	stage=new Stage();
     	Gdx.input.setInputProcessor(stage);
+        // retrieve the default table actor
     	table = new Table( getSkin() );
 
 		TextButton startGameButton = new TextButton("New Game", getSkin());
@@ -105,11 +106,7 @@ public static final int MENU_VIEWPORT_WIDTH = 300, MENU_VIEWPORT_HEIGHT = 300;
 		TextButton exitButton = new TextButton("Exit", getSkin());
 
 		Texture backgroundTexture = new Texture(Gdx.files.internal("kulki1.jpg"));
-		//Texture backgroundTexture1 = new Texture(Gdx.files.internal("White Button1.jpg"));
 		Image backImage = new Image(backgroundTexture);
-		//FileHandle skinFile1 = Gdx.files.internal( "White Button1.jpg" );
-		//startGameButton.setBackground(@drawable/White Button1);
-		//startGameButton.
 		startGameButton.addListener( new DefaultActorListener() {
             @Override
             public void touchUp(
@@ -334,4 +331,3 @@ public void Odczyt(){
 		
 	}
 }
-
