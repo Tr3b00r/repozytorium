@@ -36,7 +36,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.projektandroid.Tyrian;
 
-public class LevelScreen implements Screen{
+public class LevelScreen1 implements Screen{
 	
 	public static int ui;
 	Tyrian game;
@@ -63,6 +63,7 @@ public class LevelScreen implements Screen{
 	public static final int MENU_VIEWPORT_WIDTH = 300, MENU_VIEWPORT_HEIGHT = 300;
 	float pozx,pozy,pozz;
 	
+	
 	/**
 	 * This method is called right after initialize() method in Android Project.
 	 * Loads meshes(.obj) and textures(.png) from /data folder.
@@ -70,7 +71,7 @@ public class LevelScreen implements Screen{
 	 * Starts physics.
 	 * @throws IOException This Exception is thrown when specific file is not found.
 	 */
-	public LevelScreen(Tyrian game,Float index,float x,float y, float z ) throws IOException{
+	public LevelScreen1(Tyrian game,Float index,float x,float y, float z ) throws IOException{
 		this.game=game;
 		int width = ( isGameScreen() ? GAME_VIEWPORT_WIDTH : MENU_VIEWPORT_WIDTH );
 		int height = ( isGameScreen() ? GAME_VIEWPORT_HEIGHT : MENU_VIEWPORT_HEIGHT );
@@ -79,6 +80,7 @@ public class LevelScreen implements Screen{
 		this.pozx=x;
 		this.pozy=y;
 		this.pozz=z;
+		
   //Loading meshes + textures
   		try{
   			
@@ -97,10 +99,10 @@ public class LevelScreen implements Screen{
   			FileHandle steelfile = Gdx.files.internal("Steel.png");
   			steel = new Texture(steelfile);
   			
-  			FileHandle woodfile = Gdx.files.internal("Wood.png");
+  			FileHandle woodfile = Gdx.files.internal("wall_wood.png");
   			wood = new Texture(woodfile);
   			
-  			FileHandle stonefile = Gdx.files.internal("stone.png");
+  			FileHandle stonefile = Gdx.files.internal("floor_stones.png");
   			stone = new Texture(stonefile);
   			
   			FileHandle greenfile = Gdx.files.internal("zielonaa.png");
@@ -218,7 +220,8 @@ public class LevelScreen implements Screen{
 				gl.glMultMatrixf(glMat, 0);
 								
 				wallShapeZ = (BoxShape) body.geometry.shape;
-				stone.bind();
+				
+				wood.bind();
 				gl.glRotatef(270,1,0,0);
 				gl.glScalef(7,7,7);
 				wall.render(GL10.GL_TRIANGLES);
@@ -233,9 +236,9 @@ public class LevelScreen implements Screen{
 
 					groundShape = (StaticPlaneShape) body.geometry.shape;
 				
-					wood.bind();
+					stone.bind();
 					gl.glRotatef(270,1,0,0);
-					gl.glScalef(5f,5f,5f);
+					gl.glScalef(6f,6f,6f);
 					plane.render(GL10.GL_TRIANGLES);
 					gl.glPopMatrix();
 			}
@@ -248,21 +251,14 @@ public class LevelScreen implements Screen{
 				
 				body.motionState.resultSimulation.getOpenGLMatrix(glMat);
 				gl.glMultMatrixf(glMat,0);
-				
-				/*String X = Float.toString(body.motionState.resultSimulation.originPoint.x);
-				Gdx.app.log("koord",X);
-				String Y = Float.toString(body.motionState.resultSimulation.originPoint.y);
-				Gdx.app.log("koord",Y);
-				String Z = Float.toString(body.motionState.resultSimulation.originPoint.z);
-				Gdx.app.log("koord",Z);*/
-				
+								
 				x = body.motionState.resultSimulation.originPoint.x;
 				z = body.motionState.resultSimulation.originPoint.z;
 				
 				if((x >= 8.4 && x <= 8.6) && (z  >= 11.4 && z  <= 11.6)){
 					Gdx.app.log("Zwyciestwo","lolol");
 				}
-																
+					
 				if(indexior==0)									
 			 		black.bind();
 						else if (indexior==1)	
@@ -368,47 +364,113 @@ public class LevelScreen implements Screen{
 		physics.createAndAddRigidBody(sphereGeom, sphereState);
 		physics.createAndAddRigidBody(groundGeom, groundState);
 		
-		for(int i = 0; i < 14; i++){
+		for(int i = 0; i < 17; i++){
 			wallShapeZ = new BoxShape(wallSizeZ);
 			wallGeomZ = physics.createGeometry(wallShapeZ, wallmass, origin);
 			wallStateZ = new MotionState();
 			org.siprop.bullet.util.Vector3 walllocalInertiaZ = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
 			wallShapeZ.calculateLocalInertia(wallmass, walllocalInertiaZ);
 			wallGeomZ.localInertia = walllocalInertiaZ;
-			wallStateZ.worldTransform = new Transform(new Point3(33.0f,-10.0f,-10.0f + offset*i));
+			wallStateZ.worldTransform = new Transform(new Point3(40.0f,-10.0f,-17.0f + offset*i));
 			physics.createAndAddRigidBody(wallGeomZ, wallStateZ);
 		}
 				
-		for(int j = 0; j < 13; j++){
+		for(int j = 0; j < 16; j++){
 			wallShapeZ = new BoxShape(wallSizeZ);
 			wallGeomZ = physics.createGeometry(wallShapeZ, wallmass, origin);
 			wallStateZ = new MotionState();
 			org.siprop.bullet.util.Vector3 walllocalInertiaZ = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
 			wallShapeZ.calculateLocalInertia(wallmass, walllocalInertiaZ);
 			wallGeomZ.localInertia = walllocalInertiaZ;
-			wallStateZ.worldTransform = new Transform(new Point3(30.0f - offset*j,-10.0f,-9.5f));
+			wallStateZ.worldTransform = new Transform(new Point3(36.3f - offset*j,-10.0f,39.5f));
 			physics.createAndAddRigidBody(wallGeomZ, wallStateZ);
 		}
 		
-		for(int j = 0; j < 12; j++){
+		for(int j = 0; j < 16; j++){
 			wallShapeZ = new BoxShape(wallSizeZ);
 			wallGeomZ = physics.createGeometry(wallShapeZ, wallmass, origin);
 			wallStateZ = new MotionState();
 			org.siprop.bullet.util.Vector3 walllocalInertiaZ = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
 			wallShapeZ.calculateLocalInertia(wallmass, walllocalInertiaZ);
 			wallGeomZ.localInertia = walllocalInertiaZ;
-			wallStateZ.worldTransform = new Transform(new Point3(30.0f - offset*j,-10.0f,35.0f));
+			wallStateZ.worldTransform = new Transform(new Point3(36.3f - offset*j,-10.0f,-17.0f));
 			physics.createAndAddRigidBody(wallGeomZ, wallStateZ);
 		}	
 		
-		for(int i = 0; i < 3; i++){
+		for(int i = 0; i < 17; i++){
 			wallShapeZ = new BoxShape(wallSizeZ);
 			wallGeomZ = physics.createGeometry(wallShapeZ, wallmass, origin);
 			wallStateZ = new MotionState();
 			org.siprop.bullet.util.Vector3 walllocalInertiaZ = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
 			wallShapeZ.calculateLocalInertia(wallmass, walllocalInertiaZ);
 			wallGeomZ.localInertia = walllocalInertiaZ;
-			wallStateZ.worldTransform = new Transform(new Point3(5.0f,-10.0f,8.0f + offset*i));
+			wallStateZ.worldTransform = new Transform(new Point3(-20.0f,-10.0f,-17.0f + offset*i));
+			physics.createAndAddRigidBody(wallGeomZ, wallStateZ);
+		}
+		
+		for(int j = 0; j < 3; j++){
+			wallShapeZ = new BoxShape(wallSizeZ);
+			wallGeomZ = physics.createGeometry(wallShapeZ, wallmass, origin);
+			wallStateZ = new MotionState();
+			org.siprop.bullet.util.Vector3 walllocalInertiaZ = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
+			wallShapeZ.calculateLocalInertia(wallmass, walllocalInertiaZ);
+			wallGeomZ.localInertia = walllocalInertiaZ;
+			wallStateZ.worldTransform = new Transform(new Point3(-6.0f - offset*j,-10.0f,-13.5f));
+			physics.createAndAddRigidBody(wallGeomZ, wallStateZ);
+		}
+		
+		for(int j = 0; j < 3; j++){
+			wallShapeZ = new BoxShape(wallSizeZ);
+			wallGeomZ = physics.createGeometry(wallShapeZ, wallmass, origin);
+			wallStateZ = new MotionState();
+			org.siprop.bullet.util.Vector3 walllocalInertiaZ = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
+			wallShapeZ.calculateLocalInertia(wallmass, walllocalInertiaZ);
+			wallGeomZ.localInertia = walllocalInertiaZ;
+			wallStateZ.worldTransform = new Transform(new Point3(-9.5f - offset*j,-10.0f,-6.5f));
+			physics.createAndAddRigidBody(wallGeomZ, wallStateZ);
+		}
+		
+		for(int i = 0; i < 6; i++){
+			wallShapeZ = new BoxShape(wallSizeZ);
+			wallGeomZ = physics.createGeometry(wallShapeZ, wallmass, origin);
+			wallStateZ = new MotionState();
+			org.siprop.bullet.util.Vector3 walllocalInertiaZ = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
+			wallShapeZ.calculateLocalInertia(wallmass, walllocalInertiaZ);
+			wallGeomZ.localInertia = walllocalInertiaZ;
+			wallStateZ.worldTransform = new Transform(new Point3(-2.0f,-10.0f,-14.0f + offset*i));
+			physics.createAndAddRigidBody(wallGeomZ, wallStateZ);
+		}
+		
+		for(int j = 0; j < 3; j++){
+			wallShapeZ = new BoxShape(wallSizeZ);
+			wallGeomZ = physics.createGeometry(wallShapeZ, wallmass, origin);
+			wallStateZ = new MotionState();
+			org.siprop.bullet.util.Vector3 walllocalInertiaZ = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
+			wallShapeZ.calculateLocalInertia(wallmass, walllocalInertiaZ);
+			wallGeomZ.localInertia = walllocalInertiaZ;
+			wallStateZ.worldTransform = new Transform(new Point3(-2.5f - offset*j,-10.0f,6.0f));
+			physics.createAndAddRigidBody(wallGeomZ, wallStateZ);
+		}	
+		
+		for(int j = 0; j < 2; j++){
+			wallShapeZ = new BoxShape(wallSizeZ);
+			wallGeomZ = physics.createGeometry(wallShapeZ, wallmass, origin);
+			wallStateZ = new MotionState();
+			org.siprop.bullet.util.Vector3 walllocalInertiaZ = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
+			wallShapeZ.calculateLocalInertia(wallmass, walllocalInertiaZ);
+			wallGeomZ.localInertia = walllocalInertiaZ;
+			wallStateZ.worldTransform = new Transform(new Point3(-9.5f - offset*j,-10.0f,2.5f));
+			physics.createAndAddRigidBody(wallGeomZ, wallStateZ);
+		}
+			
+		for(int i = 0; i < 4; i++){
+			wallShapeZ = new BoxShape(wallSizeZ);
+			wallGeomZ = physics.createGeometry(wallShapeZ, wallmass, origin);
+			wallStateZ = new MotionState();
+			org.siprop.bullet.util.Vector3 walllocalInertiaZ = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
+			wallShapeZ.calculateLocalInertia(wallmass, walllocalInertiaZ);
+			wallGeomZ.localInertia = walllocalInertiaZ;
+			wallStateZ.worldTransform = new Transform(new Point3(-9.5f,-10.0f,8.5f + offset*i));
 			physics.createAndAddRigidBody(wallGeomZ, wallStateZ);
 		}
 		
@@ -419,76 +481,44 @@ public class LevelScreen implements Screen{
 			org.siprop.bullet.util.Vector3 walllocalInertiaZ = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
 			wallShapeZ.calculateLocalInertia(wallmass, walllocalInertiaZ);
 			wallGeomZ.localInertia = walllocalInertiaZ;
-			wallStateZ.worldTransform = new Transform(new Point3(23.0f,-10.0f,8.0f + offset*i));
+			wallStateZ.worldTransform = new Transform(new Point3(-9.5f,-10.0f,26.5f + offset*i));
 			physics.createAndAddRigidBody(wallGeomZ, wallStateZ);
 		}
 		
-		for(int i = 0; i < 7; i++){
+		for(int j = 0; j < 1; j++){
 			wallShapeZ = new BoxShape(wallSizeZ);
 			wallGeomZ = physics.createGeometry(wallShapeZ, wallmass, origin);
 			wallStateZ = new MotionState();
 			org.siprop.bullet.util.Vector3 walllocalInertiaZ = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
 			wallShapeZ.calculateLocalInertia(wallmass, walllocalInertiaZ);
 			wallGeomZ.localInertia = walllocalInertiaZ;
-			wallStateZ.worldTransform = new Transform(new Point3(-3.0f,-10.0f,0.5f + offset*i));
-			physics.createAndAddRigidBody(wallGeomZ, wallStateZ);
-		}
-						
-		for(int j = 0; j < 10; j++){
-			wallShapeZ = new BoxShape(wallSizeZ);
-			wallGeomZ = physics.createGeometry(wallShapeZ, wallmass, origin);
-			wallStateZ = new MotionState();
-			org.siprop.bullet.util.Vector3 walllocalInertiaZ = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
-			wallShapeZ.calculateLocalInertia(wallmass, walllocalInertiaZ);
-			wallGeomZ.localInertia = walllocalInertiaZ;
-			wallStateZ.worldTransform = new Transform(new Point3(30.0f - offset*j,-10.0f,0.0f));
-			physics.createAndAddRigidBody(wallGeomZ, wallStateZ);
-		}	
-		
-		for(int j = 0; j < 8; j++){
-			wallShapeZ = new BoxShape(wallSizeZ);
-			wallGeomZ = physics.createGeometry(wallShapeZ, wallmass, origin);
-			wallStateZ = new MotionState();
-			org.siprop.bullet.util.Vector3 walllocalInertiaZ = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
-			wallShapeZ.calculateLocalInertia(wallmass, walllocalInertiaZ);
-			wallGeomZ.localInertia = walllocalInertiaZ;
-			wallStateZ.worldTransform = new Transform(new Point3(23.0f - offset*j,-10.0f,22.0f));
-			physics.createAndAddRigidBody(wallGeomZ, wallStateZ);
-		}	
-		
-		for(int j = 0; j < 3; j++){
-			wallShapeZ = new BoxShape(wallSizeZ);
-			wallGeomZ = physics.createGeometry(wallShapeZ, wallmass, origin);
-			wallStateZ = new MotionState();
-			org.siprop.bullet.util.Vector3 walllocalInertiaZ = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
-			wallShapeZ.calculateLocalInertia(wallmass, walllocalInertiaZ);
-			wallGeomZ.localInertia = walllocalInertiaZ;
-			wallStateZ.worldTransform = new Transform(new Point3(13.0f - offset*j,-10.0f,8.0f));
-			physics.createAndAddRigidBody(wallGeomZ, wallStateZ);
-		}	
-		
-		for(int j = 0; j < 3; j++){
-			wallShapeZ = new BoxShape(wallSizeZ);
-			wallGeomZ = physics.createGeometry(wallShapeZ, wallmass, origin);
-			wallStateZ = new MotionState();
-			org.siprop.bullet.util.Vector3 walllocalInertiaZ = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
-			wallShapeZ.calculateLocalInertia(wallmass, walllocalInertiaZ);
-			wallGeomZ.localInertia = walllocalInertiaZ;
-			wallStateZ.worldTransform = new Transform(new Point3(15.0f - offset*j,-10.0f,15.0f));
+			wallStateZ.worldTransform = new Transform(new Point3(-16.5f - offset*j,-10.0f,11.5f));
 			physics.createAndAddRigidBody(wallGeomZ, wallStateZ);
 		}
 		
-		for(int j = 0; j < 3; j++){
+		for(int j = 0; j < 1; j++){
 			wallShapeZ = new BoxShape(wallSizeZ);
 			wallGeomZ = physics.createGeometry(wallShapeZ, wallmass, origin);
 			wallStateZ = new MotionState();
 			org.siprop.bullet.util.Vector3 walllocalInertiaZ = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
 			wallShapeZ.calculateLocalInertia(wallmass, walllocalInertiaZ);
 			wallGeomZ.localInertia = walllocalInertiaZ;
-			wallStateZ.worldTransform = new Transform(new Point3(23.0f - offset*j,-10.0f,8.0f));
+			wallStateZ.worldTransform = new Transform(new Point3(-13f - offset*j,-10.0f,18.5f));
 			physics.createAndAddRigidBody(wallGeomZ, wallStateZ);
-		}	
+		}
 		
+		for(int j = 0; j < 1; j++){
+			wallShapeZ = new BoxShape(wallSizeZ);
+			wallGeomZ = physics.createGeometry(wallShapeZ, wallmass, origin);
+			wallStateZ = new MotionState();
+			org.siprop.bullet.util.Vector3 walllocalInertiaZ = new org.siprop.bullet.util.Vector3(0.026f, 0.026f, 0.026f);
+			wallShapeZ.calculateLocalInertia(wallmass, walllocalInertiaZ);
+			wallGeomZ.localInertia = walllocalInertiaZ;
+			wallStateZ.worldTransform = new Transform(new Point3(-16.5f - offset*j,-10.0f,28.5f));
+			physics.createAndAddRigidBody(wallGeomZ, wallStateZ);
+		}
+		
+		/*				
 		for(int j = 0; j < 1; j++){
 			wallShapeZ = new BoxShape(wallSizeZ);
 			wallGeomZ = physics.createGeometry(wallShapeZ, wallmass, origin);
@@ -619,6 +649,6 @@ public class LevelScreen implements Screen{
 			wallGeomZ.localInertia = walllocalInertiaZ;
 			wallStateZ.worldTransform = new Transform(new Point3(0.0f - offset*j,-10.0f,-2.0f));
 			physics.createAndAddRigidBody(wallGeomZ, wallStateZ);
-		}
+		}*/
 	}
 }
