@@ -36,6 +36,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.projektandroid.Tyrian;
 
+/**
+ * 
+ * @author Robert Pietrzko
+ * @author Dawid Plichta
+ * 
+ * Class encapsulates one whole level (first one).
+ * 
+ */
 public class LevelScreen implements Screen{
 	
 	public static int ui;
@@ -126,9 +134,12 @@ public class LevelScreen implements Screen{
   		
   		position = new Vector3();
   		  		
-  		initPhysics();
+  		initPhysics(); //initializes physics
 	}
 	
+	/**
+	 * Method saves current player location. Save is named by date when the game was saved.
+	 */
 	public static void Zapis() {
 
 		FileOutputStream fos = null;
@@ -173,6 +184,8 @@ public class LevelScreen implements Screen{
 	 * This method is responsible for OpenGL rendering mechanism.
 	 * Adds lighting to the world.
 	 * Checks rigidBody map for proper collisionshapes (like SphereShape or BoxShape).
+	 * Calls automatic save when user touches the screen.(If user doesnt want to save then the save is not commited)
+	 * @param delta Time for renderer loop
 	 */
 	public void render(float delta) {
 		float[] light_ambient = new float[] { 1.5f, 1.5f, 1.5f, 1.5f };
@@ -226,18 +239,18 @@ public class LevelScreen implements Screen{
 			}
 			
 			if(body.geometry.shape.getType() == ShapeType.STATIC_PLANE_PROXYTYPE) {
-					gl.glPushMatrix();
+				gl.glPushMatrix();
 				
-					body.motionState.resultSimulation.getOpenGLMatrix(glMat);
-					gl.glMultMatrixf(glMat,0);
+				body.motionState.resultSimulation.getOpenGLMatrix(glMat);
+				gl.glMultMatrixf(glMat,0);
 
-					groundShape = (StaticPlaneShape) body.geometry.shape;
+				groundShape = (StaticPlaneShape) body.geometry.shape;
 				
-					wood.bind();
-					gl.glRotatef(270,1,0,0);
-					gl.glScalef(5f,5f,5f);
-					plane.render(GL10.GL_TRIANGLES);
-					gl.glPopMatrix();
+				wood.bind();
+				gl.glRotatef(270,1,0,0);
+				gl.glScalef(5f,5f,5f);
+				plane.render(GL10.GL_TRIANGLES);
+				gl.glPopMatrix();
 			}
 			
 			if(body.geometry.shape.getType() == ShapeType.SPHERE_SHAPE_PROXYTYPE) {
@@ -249,15 +262,8 @@ public class LevelScreen implements Screen{
 				body.motionState.resultSimulation.getOpenGLMatrix(glMat);
 				gl.glMultMatrixf(glMat,0);
 				
-				/*String X = Float.toString(body.motionState.resultSimulation.originPoint.x);
-				Gdx.app.log("koord",X);
-				String Y = Float.toString(body.motionState.resultSimulation.originPoint.y);
-				Gdx.app.log("koord",Y);
-				String Z = Float.toString(body.motionState.resultSimulation.originPoint.z);
-				Gdx.app.log("koord",Z);*/
-				
-				x = body.motionState.resultSimulation.originPoint.x;
-				z = body.motionState.resultSimulation.originPoint.z;
+				x = body.motionState.resultSimulation.originPoint.x; //current x position of player
+				z = body.motionState.resultSimulation.originPoint.z; //current z position of player
 				
 				if((x >= 8.4 && x <= 8.6) && (z  >= 11.4 && z  <= 11.6)){
 					Gdx.app.log("Zwyciestwo","lolol");

@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.projektandroid.Gra;
 import com.projektandroid.Tyrian;
 
 /**
@@ -32,7 +31,6 @@ public abstract class AbstractScreen
     private Skin skin;
     private TextureAtlas atlas;
     private Table table;
-    private Gra gra;
     public AbstractScreen(
         Tyrian game )
     {
