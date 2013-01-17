@@ -179,6 +179,24 @@ implements Screen
 				}
             }
         } );
+        
+        episode3Button.addListener( new DefaultActorListener() {
+            public void touchUp(
+                ActorEvent event,
+                float x,
+                float y,
+                int pointer,
+                int button )
+            {
+                game.getSoundManager().play( TyrianSound.CLICK );
+                try {
+					game.setScreen( new LevelScreen2( game,Float.valueOf(shipModelSelectBox.getSelectionIndex()),-15.0f,11.0f,29.2f ) );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+        } );
         table.add( episode4Button ).padRight(150);
         table.add( "        " );
         table.add( "        " );
