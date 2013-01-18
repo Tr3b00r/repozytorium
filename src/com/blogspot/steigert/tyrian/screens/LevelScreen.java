@@ -50,7 +50,7 @@ public class LevelScreen implements Screen{
 	Tyrian game;
 	Stage stage;
 	Float indexior;
-	private Texture steel,wood,stone,green,maja,pink,black;
+	private Texture steel,wood,stone,green,maja,pink,black,aim;
 	private PerspectiveCamera camera;
 	private static float spherex = 0.0f, spherey = 0.0f, deltaTime = 0.0f, startTime = 0.0f, endTime = 0.0f;
 	private static Vector3 position;
@@ -65,7 +65,7 @@ public class LevelScreen implements Screen{
 	private static org.siprop.bullet.util.Vector3 movement1 =  new org.siprop.bullet.util.Vector3(0.0f, 0.0f, 0.0f);
 	private Map<Integer, RigidBody> rigidBody;
 	private static float[] glMat = new float[16];
-	private Mesh sphere,plane,wall;
+	private Mesh sphere,plane,wall,target;
 	private Skin skin;
 	public static final int GAME_VIEWPORT_WIDTH = 140, GAME_VIEWPORT_HEIGHT = 400;
 	public static final int MENU_VIEWPORT_WIDTH = 300, MENU_VIEWPORT_HEIGHT = 300;
@@ -101,6 +101,10 @@ public class LevelScreen implements Screen{
   			InputStream wallfile = Gdx.files.internal("cube.obj").read();
   			wall = ObjLoader.loadObj(wallfile,false);
   			wallfile.close();
+  			
+  			InputStream targetfile = Gdx.files.internal("target.obj").read();
+  			target = ObjLoader.loadObj(targetfile,false);
+  			targetfile.close();
   			  			
   			FileHandle steelfile = Gdx.files.internal("Steel.png");
   			steel = new Texture(steelfile);
@@ -123,6 +127,8 @@ public class LevelScreen implements Screen{
   			FileHandle blackfile = Gdx.files.internal("czarna.png");
   			black = new Texture(blackfile);
   			
+  			FileHandle aimfile = Gdx.files.internal("aim.png");
+  			aim = new Texture(aimfile);
   		}catch(IOException e){
   			e.printStackTrace();
   		}
@@ -291,6 +297,14 @@ public class LevelScreen implements Screen{
 			fh.writeString(String.valueOf(x)+" "+String.valueOf(z)+" "+String.valueOf(indexior),false);
 			game.setScreen(new MenuScreen(game));
 		}
+		
+		gl.glPushMatrix();
+		gl.glTranslatef(8.5f,-10.0f,11.5f);
+		gl.glScalef(1.0f,1.0f,1.0f);
+		gl.glRotatef(270,1,0,0);
+		aim.bind();
+		target.render(GL10.GL_TRIANGLES);
+		gl.glPopMatrix();
 		
 		gl.glDisable(GL10.GL_CULL_FACE);
 		gl.glDisable(GL10.GL_DEPTH_TEST);

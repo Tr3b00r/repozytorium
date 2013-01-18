@@ -190,7 +190,7 @@ implements Screen
             {
                 game.getSoundManager().play( TyrianSound.CLICK );
                 try {
-					game.setScreen( new LevelScreen2( game,Float.valueOf(shipModelSelectBox.getSelectionIndex()),-15.0f,11.0f,29.2f ) );
+					game.setScreen( new LevelScreen2( game,Float.valueOf(shipModelSelectBox.getSelectionIndex()),-15.0f,6.0f,17.2f ) );
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
